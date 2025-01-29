@@ -1,10 +1,10 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import Tasks from "../../backend/models/tasks";
+import Task from "../models/taskModel";
 
 const taskRouter = express.Router();
 
-const tasks: Tasks[] = [
+const tasks: Task[] = [
     { _id: new ObjectId(), taskName: "First Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date ('02/01/2025') },
     { _id: new ObjectId(), taskName: "Second Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
 ];
@@ -26,7 +26,7 @@ taskRouter.get("/tasks", async (_req, res) => {
 taskRouter.get("/tasks/:id", async (_req, res) => {
     try {
       const _id: ObjectId = new ObjectId(_req.params.id);
-      const result: Tasks | undefined = tasks.find((item) =>
+      const result: Task | undefined = tasks.find((item) =>
         item._id?.equals(_id)
       );
       if (result) {
@@ -44,7 +44,7 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
 
   taskRouter.post("/tasks", async (req, res) => {
     try {
-      const newTask: Tasks = req.body;
+      const newTask: Task = req.body;
       newTask._id = new ObjectId();
       tasks.push(newTask);
       res.status(201).json(newTask);
@@ -58,7 +58,7 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
   taskRouter.put("/tasks/:id", async (req, res) => {
     try {
       const _id: ObjectId = new ObjectId(req.params.id);
-      const tasks: Tasks = req.body;
+      const tasks: Task = req.body;
       const index: number = tasks.findIndex((item: { _id: { equals: (arg0: ObjectId) => any; }; }) => item._id?.equals(_id));
       if (index !== -1) {
         tasks[index] = tasks;
