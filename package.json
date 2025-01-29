@@ -6,6 +6,27 @@
     "mongodb": "^6.12.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.10"
-  }
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.10",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "start:dev": "nodemon src/backend/index.ts",
+    "test": "jest",
+    "test:dev": "jest --watchAll --verbose"
+  },
+  "name": "task-assist-backend",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
