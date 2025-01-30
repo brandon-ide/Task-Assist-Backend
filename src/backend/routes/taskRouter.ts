@@ -7,7 +7,12 @@ const taskRouter = express.Router();
 const tasks: Task[] = [
     { _id: new ObjectId(), taskName: "First Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date ('02/01/2025') },
     { _id: new ObjectId(), taskName: "Second Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
-];
+    { _id: new ObjectId(), taskName: "Third Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date ('02/01/2025') },
+    { _id: new ObjectId(), taskName: "Fourth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
+    { _id: new ObjectId(), taskName: "Fifth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date ('02/01/2025') },
+    { _id: new ObjectId(), taskName: "Sixth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
+    { _id: new ObjectId(), taskName: "Seventh Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
+  ];
 
 
 const errorResponse = (error: any, res: any) => {
@@ -74,6 +79,25 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
     }
   });
 
+  //delete by task name
+  taskRouter.delete("/tasks/:taskName", async (req, res) => {
+    try {
+      const { taskName } = req.params; 
+      
+      const index: number = tasks.findIndex((item) => item.taskName === taskName);
+  
+      if (index !== -1) {
+        tasks.splice(index, 1);
+        res.sendStatus(204); 
+      } else {
+        res.status(404).send("Task not found");
+      }
+  
+    } catch (error) {
+      errorResponse(error, res); 
+    }
+  });
+
   taskRouter.delete("/tasks/:id", async (req, res) => {
     try {
       const _id: ObjectId = new ObjectId(req.params.id);
@@ -92,4 +116,3 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
   });
 
   export default taskRouter;
-
