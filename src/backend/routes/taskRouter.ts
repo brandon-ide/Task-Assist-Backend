@@ -3,7 +3,6 @@ import { ObjectId } from "mongodb";
 import Task from "../models/taskModel";
 
 const taskRouter = express.Router();
-
 const tasks: Task[] = [
     { _id: new ObjectId(), taskName: "First Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date ('02/01/2025') },
     { _id: new ObjectId(), taskName: "Second Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
@@ -13,7 +12,6 @@ const tasks: Task[] = [
     { _id: new ObjectId(), taskName: "Sixth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
     { _id: new ObjectId(), taskName: "Seventh Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date ('02/15/2025') },
   ];
-
 
 const errorResponse = (error: any, res: any) => {
     console.error("Fail", error);
@@ -60,18 +58,18 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
     }
   });
 
+  //Update a task
   taskRouter.put("/tasks/:id", async (req, res) => {
     try {
       const _id: ObjectId = new ObjectId(req.params.id);
-      const tasks: Task = req.body;
+
+      const { taskName, taskCategory, taskPriority } = req.body;
       const index: number = tasks.findIndex((item: { _id: { equals: (arg0: ObjectId) => any; }; }) => item._id?.equals(_id));
       if (index !== -1) {
-        tasks[index] = tasks;
-        res.status(200);
-        res.json(tasks);
+        tasks[index] = { ...tasks[index], taskName, taskCategory, taskPriority };
+        res.status(200).send(`Task with ID ${_id} updated.`);
       } else {
         res.status(404);
-        res.send(`Task not found`);
       }
   
     } catch (err) {
@@ -79,7 +77,7 @@ taskRouter.get("/tasks/:id", async (_req, res) => {
     }
   });
 
-  //delete by task name
+  //Delete by task name
   taskRouter.delete("/tasks/:taskName", async (req, res) => {
     try {
       const { taskName } = req.params; 
