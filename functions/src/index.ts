@@ -3,8 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import taskRouter from "./routes/taskRouter.js";
-import { getClient } from "./db.js"; // ✅ Use shared MongoDB client
-
+import { getClient } from "./db.js"; 
 // Ensure DB connection on startup
 getClient().catch(console.error);
 
@@ -19,6 +18,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Use your existing routes
+//app.use("/", taskRouter); having minor issues with the routing.
 app.use("/tasks", taskRouter);
 
 
