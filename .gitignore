@@ -1,2 +1,8 @@
 /node_modules
 .env
+
+firebase.json
+.firebaserc
+.env
+src/firebaseConfig.js
+src/firebaseConfig.ts
