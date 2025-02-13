@@ -1,87 +1,113 @@
 import express from "express";
-import { ObjectId, Collection } from "mongodb";
-import * as functions from "firebase-functions";
-import Task from "../models/taskModel.js";
-import { getClient } from "../db.js"; // ✅ Use shared MongoDB client
+import { ObjectId } from "mongodb";
+import Task from "../models/taskModel";
 
 const taskRouter = express.Router();
-
-// Get MongoDB Collection
-const getCollection = async (): Promise<Collection<Task>> => {
-  const db = await getClient();
-  return db.collection<Task>("tasks");
-};
+const tasks: Task[] = [
+  { _id: new ObjectId(), taskName: "First Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date('02/01/2025') },
+  { _id: new ObjectId(), taskName: "Second Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date('02/15/2025') },
+  { _id: new ObjectId(), taskName: "Third Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date('02/01/2025') },
+  { _id: new ObjectId(), taskName: "Fourth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date('02/15/2025') },
+  { _id: new ObjectId(), taskName: "Fifth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'High', dueDate: new Date('02/01/2025') },
+  { _id: new ObjectId(), taskName: "Sixth Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date('02/15/2025') },
+  { _id: new ObjectId(), taskName: "Seventh Entry", dateOfEntry: new Date('01/22/2025'), taskCategory: 'personal', taskPriority: 'Medium', dueDate: new Date('02/15/2025') },
+];
 
 const errorResponse = (error: any, res: any) => {
-  functions.logger.error("Error:", error);
+  console.error("Fail", error);
   res.status(500).json({ message: "Internal Server Error" });
 };
 
-// Get all tasks
 taskRouter.get("/tasks", async (_req, res) => {
   try {
-    const tasksCollection = await getCollection();
-    const tasks = await tasksCollection.find().toArray();
     res.status(200).json(tasks);
   } catch (err) {
     errorResponse(err, res);
   }
-});
+})
 
-// Get a single task by ID
-taskRouter.get("/tasks/:id", async (req, res) => {
+taskRouter.get("/tasks/:id", async (_req, res) => {
   try {
-    const _id = new ObjectId(req.params.id);
-    const tasksCollection = await getCollection();
-    const task = await tasksCollection.findOne({ _id });
+    const _id: ObjectId = new ObjectId(_req.params.id);
+    const result: Task | undefined = tasks.find((item) =>
+      item._id?.equals(_id)
+    );
+    if (result) {
+      res.status(200);
+      res.json(result);
+    } else {
+      res.status(404).send(`Task not found`);
+    }
+  }
 
-    task ? res.status(200).json(task) : res.status(404).send("Task not found");
-  } catch (err) {
+  catch (err) {
     errorResponse(err, res);
   }
 });
 
-// Create a new task
 taskRouter.post("/tasks", async (req, res) => {
   try {
-    const newTask: Task = { ...req.body, _id: new ObjectId() };
-    const tasksCollection = await getCollection();
-    const result = await tasksCollection.insertOne(newTask);
+    const newTask: Task = req.body;
+    newTask._id = new ObjectId();
+    tasks.push(newTask);
+    res.status(201).json(newTask);
+  }
 
-    res.status(201).json({ ...newTask, _id: result.insertedId });
-  } catch (err) {
+  catch (err) {
     errorResponse(err, res);
   }
 });
 
-// Update an existing task
+//Update a task
 taskRouter.put("/tasks/:id", async (req, res) => {
   try {
-    const _id = new ObjectId(req.params.id);
-    const tasksCollection = await getCollection();
-    const updateResult = await tasksCollection.updateOne(
-      { _id },
-      { $set: req.body }
-    );
+    const _id: ObjectId = new ObjectId(req.params.id);
 
-    updateResult.matchedCount
-      ? res.status(200).send(`Task with ID ${_id} updated.`)
-      : res.status(404).send("Task not found");
+    const { taskName, taskCategory, taskPriority, dueDate } = req.body;
+    const index: number = tasks.findIndex((item: { _id: { equals: (arg0: ObjectId) => any; }; }) => item._id?.equals(_id));
+    if (index !== -1) {
+      tasks[index] = { ...tasks[index], taskName, taskCategory, taskPriority, dueDate };
+      res.status(200).send(`Task with ID ${_id} updated.`);
+    } else {
+      res.status(404);
+    }
+
   } catch (err) {
     errorResponse(err, res);
   }
 });
 
-// Delete a task by ID
+//Delete by task name
+taskRouter.delete("/tasks/:taskName", async (req, res) => {
+  try {
+    const { taskName } = req.params;
+
+    const index: number = tasks.findIndex((item) => item.taskName === taskName);
+
+    if (index !== -1) {
+      tasks.splice(index, 1);
+      res.sendStatus(204);
+    } else {
+      res.status(404).send("Task not found");
+    }
+
+  } catch (error) {
+    errorResponse(error, res);
+  }
+});
+
 taskRouter.delete("/tasks/:id", async (req, res) => {
   try {
-    const _id = new ObjectId(req.params.id);
-    const tasksCollection = await getCollection();
-    const deleteResult = await tasksCollection.deleteOne({ _id });
+    const _id: ObjectId = new ObjectId(req.params.id);
+    const index: number = tasks.findIndex((item) => item._id?.equals(_id));
+    if (index !== -1) {
+      tasks.splice(index, 1);
+      res.sendStatus(204);
+    } else {
+      res.status(404);
+      res.send("Task not found");
+    }
 
-    deleteResult.deletedCount
-      ? res.sendStatus(204)
-      : res.status(404).send("Task not found");
   } catch (error) {
     errorResponse(error, res);
   }
