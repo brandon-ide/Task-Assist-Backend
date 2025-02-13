@@ -1,26 +1,25 @@
-import * as functions from "firebase-functions";
+// require the express module
 import express from "express";
 import morgan from "morgan";
+// require the cors module
 import cors from "cors";
-import taskRouter from "./routes/taskRouter.js";
-import { getClient } from "./db.js"; 
-// Ensure DB connection on startup
-getClient().catch(console.error);
 
-// Create an instance of Express
+import taskRouter from "./routes/taskRouter";
+
+// creates an instance of an Express server
 const app = express();
 
-// Enable CORS and logging
+// enable Cross Origin Resource Sharing so this API can be used from web-apps on other domains
 app.use(cors());
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
-// Allow JSON request bodies
+// allow POST and PUT requests to use JSON bodies
 app.use(express.json());
+app.use("/", taskRouter);
 
-// Use your existing routes
-//app.use("/", taskRouter); having minor issues with the routing.
-app.use("/tasks", taskRouter);
+// define the port
+const port = 3000;
 
 
-// Export the Express app as a Firebase Function
-export const api = functions.https.onRequest(app);
+// run the server
+app.listen(port, () => console.log(`Listening on port: ${port}.`));
