@@ -3,7 +3,6 @@
 This project is a backend for **Task Assist** built with **Firebase Cloud Functions** and **Express** in TypeScript. It uses MongoDB as the data store and is designed to run seamlessly both locally (via the Firebase Emulator) and on Firebase.
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-blue?logo=github)](https://github.com/brandon-ide/Task-Assist-Backend.git)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)  
 [![Node.js v22](https://img.shields.io/badge/Node-v22-blue.svg)](https://nodejs.org/)  
 [![Firebase](https://img.shields.io/badge/Firebase-Functions-orange.svg)](https://firebase.google.com/)
 
@@ -93,10 +92,4 @@ firebase use --add
 For every change in your TypeScript files, rebuild with:
 ```bash
 npm run build
-```
-📜 License
-This project is licensed under the MIT License.
-```pgsql
-
-This README file includes all the details, icons, and links needed to set up, run, and deploy your project. It is formatted for clarity and ease of use. Simply copy, paste, and save as `README.md` in your project's root directory.
 ```
